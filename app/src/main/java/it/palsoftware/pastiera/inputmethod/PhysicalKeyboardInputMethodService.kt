@@ -2319,7 +2319,34 @@ class PhysicalKeyboardInputMethodService : InputMethodService() {
             }
             return true
         }
-        
+
+        // Handle Alt+Shift for layout cycling
+        if (
+            hasEditableField &&
+            (keyCode == KeyEvent.KEYCODE_SHIFT_LEFT || keyCode == KeyEvent.KEYCODE_SHIFT_RIGHT) &&
+            (event?.isAltPressed == true || altPressed || altLatchActive || altOneShot)
+        ) {
+            var shouldUpdateStatusBar = false
+
+            // Clear Alt state if active
+            val hadAlt = altLatchActive || altOneShot || altPressed
+            if (hadAlt) {
+                modifierStateController.clearAltState(resetPressedState = true)
+                shouldUpdateStatusBar = true
+            }
+
+            // Clear Shift state to avoid leaving it active
+            val hadShift = altLatchActive || altOneShot || altPressed
+            if (hadShift) {
+                shouldUpdateStatusBar = true
+            }
+
+            // Cycle to next layout
+            cycleLayoutFromShortcut()
+            updateStatusBarText()
+            return true
+        }
+
         val ic = currentInputConnection
         val state = inputContextState
         val isAutoCorrectEnabled = SettingsManager.getAutoCorrectEnabled(this) && !state.shouldDisableAutoCorrect
