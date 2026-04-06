@@ -64,6 +64,9 @@ fun KeyboardLayoutSettingsScreen(
     var physicalKeyboardProfileOverride by remember {
         mutableStateOf(SettingsManager.getPhysicalKeyboardProfileOverride(context))
     }
+    var altShiftLayoutSwitch by remember {
+        mutableStateOf(SettingsManager.isAltShiftLayoutSwitchEnabled(context))
+    }
     val detectedPhysicalProfile = remember { DeviceSpecific.physicalKeyboardName() }
     var showPhysicalProfileMenu by remember { mutableStateOf(false) }
     var selectedLayout by remember(locale, automaticLayoutMode) {

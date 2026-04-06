@@ -2278,6 +2278,29 @@ class PhysicalKeyboardInputMethodService : InputMethodService() {
             InputEventRouter.EditableFieldRoutingResult.Continue -> {}
         }
         
+        // Handle Alt+Shift for subtype cycling
+        if (
+            hasEditableField &&
+            SettingsManager.isAltShiftLayoutSwitchEnabled(this) &&
+            (((keyCode == KeyEvent.KEYCODE_SHIFT_LEFT || keyCode == KeyEvent.KEYCODE_SHIFT_RIGHT) &&
+            (event?.isAltPressed == true || altPressed || altLatchActive || altOneShot)) ||
+            ((keyCode == KeyEvent.KEYCODE_ALT_LEFT || keyCode == KeyEvent.KEYCODE_ALT_RIGHT) &&
+            (event?.isShiftPressed == true || shiftPressed || shiftLayerLatched || shiftOneShot)))       
+        ) {
+            // Clear Alt and Shift states
+            var shouldUpdateStatusBar = false
+            modifierStateController.clearAltState(resetPressedState = true)
+            modifierStateController.clearShiftState(resetPressedState = true)
+
+            // Cycle to next subtype
+            if (SubtypeCycler.cycleToNextSubtype(this, PhysicalKeyboardInputMethodService::class.java, assets, showToast = true)) {
+                shouldUpdateStatusBar = true
+            }
+            
+            updateStatusBarText()
+            return true
+        }
+        
         // Handle Ctrl+Space for subtype cycling
         if (
             hasEditableField &&
@@ -2317,33 +2340,6 @@ class PhysicalKeyboardInputMethodService : InputMethodService() {
             if (shouldUpdateStatusBar) {
                 updateStatusBarText()
             }
-            return true
-        }
-
-        // Handle Alt+Shift for layout cycling
-        if (
-            hasEditableField &&
-            (keyCode == KeyEvent.KEYCODE_SHIFT_LEFT || keyCode == KeyEvent.KEYCODE_SHIFT_RIGHT) &&
-            (event?.isAltPressed == true || altPressed || altLatchActive || altOneShot)
-        ) {
-            var shouldUpdateStatusBar = false
-
-            // Clear Alt state if active
-            val hadAlt = altLatchActive || altOneShot || altPressed
-            if (hadAlt) {
-                modifierStateController.clearAltState(resetPressedState = true)
-                shouldUpdateStatusBar = true
-            }
-
-            // Clear Shift state to avoid leaving it active
-            val hadShift = altLatchActive || altOneShot || altPressed
-            if (hadShift) {
-                shouldUpdateStatusBar = true
-            }
-
-            // Cycle to next layout
-            cycleLayoutFromShortcut()
-            updateStatusBarText()
             return true
         }
 

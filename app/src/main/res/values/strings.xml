@@ -249,6 +249,9 @@
     <string name="keyboard_profile_option_key2">BlackBerry Key2</string>
     <string name="keyboard_profile_option_q25">BlackBerry Q25</string>
     <string name="keyboard_profile_option_titan2">Unihertz Titan / Titan 2</string>
+    <!-- Alt+Shift Layout Switch Section -->
+    <string name="alt_shift_layout_switch_title">Alt+Shift Layout Switch</string>
+    <string name="alt_shift_layout_switch_description">Enable Alt+Shift keyboard shortcut to cycle through configured keyboard layouts.</string>
     
     <!-- About Section -->
     <string name="about_github">GitHub</string>
